@@ -1,0 +1,2204 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Núcleo de perforación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* --- estratos, del más superficial al más profundo --- */
+        --e1: #fdeff3;
+        --e2: #fadfe7;
+        --e3: #f6cbda;
+        --e4: #efb2c8;
+        --e5: #e293b1;
+        --e6: #cb7a9c;
+
+        /* --- paleta base --- */
+        --superficie: #fbe4ea;
+        --media: #c98fa6;
+        --honda: #4a2c3c;
+        --tinta: #42222f;
+        --papel: #fff7f9;
+        --ciruela: #6e4257;
+        --menta: #a8d5c2;
+
+        --serif: "Newsreader", Georgia, serif;
+        --sans: "IBM Plex Sans", system-ui, sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: var(--sans);
+        color: var(--tinta);
+        background: var(--superficie);
+        background-image: linear-gradient(
+          180deg,
+          #fdf0f3 0%,
+          var(--superficie) 12%,
+          #e7b5c6 34%,
+          var(--media) 52%,
+          #8a5670 76%,
+          var(--honda) 100%
+        );
+        background-attachment: fixed;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+        html {
+          scroll-behavior: auto;
+        }
+      }
+      :focus-visible {
+        outline: 2px solid var(--ciruela);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
+
+      .envoltura {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 0 18px 90px;
+      }
+
+      /* ---------- superficie ---------- */
+      .superficie {
+        padding: 58px 0 34px;
+      }
+      .sello-campo {
+        font-family: var(--mono);
+        font-size: 11.5px;
+        letter-spacing: 0.06em;
+        color: #9a6a7e;
+        margin: 0 0 26px;
+      }
+      .titulo {
+        font-family: var(--serif);
+        font-weight: 300;
+        font-size: clamp(34px, 8.5vw, 54px);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        margin: 0 0 6px;
+      }
+      .titulo em {
+        font-style: italic;
+      }
+      .bajada {
+        font-family: var(--serif);
+        font-size: 18px;
+        font-weight: 300;
+        line-height: 1.5;
+        color: #6e4757;
+        margin: 0 0 34px;
+        max-width: 46ch;
+      }
+
+      .registro {
+        border-top: 1px solid rgba(66, 34, 47, 0.28);
+        border-bottom: 1px solid rgba(66, 34, 47, 0.28);
+        padding: 20px 0 22px;
+      }
+      .dias {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-family: var(--serif);
+        font-weight: 300;
+        margin: 0;
+      }
+      .dias b {
+        font-size: clamp(46px, 13vw, 76px);
+        font-weight: 400;
+        line-height: 0.9;
+        letter-spacing: -0.03em;
+      }
+      .dias span {
+        font-size: 19px;
+      }
+      .desglose {
+        font-family: var(--mono);
+        font-size: 12.5px;
+        color: #8a5d70;
+        margin: 12px 0 0;
+      }
+      .lecturas {
+        margin: 16px 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 7px;
+      }
+      .lecturas li {
+        font-size: 13.5px;
+        color: #5c3546;
+        padding-left: 16px;
+        position: relative;
+        max-width: 52ch;
+      }
+      .lecturas li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.62em;
+        width: 7px;
+        height: 7px;
+        background: var(--e5);
+        transform: rotate(45deg);
+      }
+
+      .instruccion {
+        margin: 30px 0 8px;
+        font-size: 14px;
+        color: #5c3546;
+        max-width: 48ch;
+      }
+
+      /* ---------- núcleo ---------- */
+      .nucleo {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .estrato {
+        display: grid;
+        grid-template-columns: 52px 1fr;
+        align-items: stretch;
+      }
+
+      .prof {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.7);
+        padding: 14px 10px 0 0;
+        text-align: right;
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+      }
+      .estrato:first-child .prof {
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .prof::after {
+        content: "";
+        position: absolute;
+        right: -1px;
+        top: 18px;
+        width: 9px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.6);
+      }
+
+      .banda {
+        margin-left: 14px;
+        padding: 16px 18px 18px;
+        min-height: 96px;
+        border: 1px solid rgba(74, 44, 60, 0.28);
+        background: var(--tono);
+        position: relative;
+        overflow: hidden;
+      }
+      .estrato:not(:first-child) .banda {
+        border-top: none;
+      }
+
+      .estrato.sellado .banda {
+        filter: grayscale(0.55) brightness(0.94);
+      }
+      .estrato.sellado .banda::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          -45deg,
+          rgba(74, 44, 60, 0.11) 0 3px,
+          transparent 3px 9px
+        );
+      }
+
+      .era {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-size: 23px;
+        letter-spacing: -0.01em;
+        margin: 0;
+        line-height: 1.15;
+      }
+      .periodo {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: rgba(66, 34, 47, 0.6);
+        margin: 3px 0 0;
+      }
+
+      .estado {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+      .pista {
+        font-size: 13px;
+        color: rgba(66, 34, 47, 0.68);
+        margin: 0;
+      }
+
+      .btn {
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 500;
+        padding: 9px 18px;
+        border: 1px solid var(--ciruela);
+        background: var(--ciruela);
+        color: var(--papel);
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+      .btn:hover {
+        background: transparent;
+        color: var(--ciruela);
+      }
+      .btn[disabled] {
+        opacity: 0.45;
+        cursor: not-allowed;
+        background: transparent;
+        color: rgba(66, 34, 47, 0.7);
+        border-color: rgba(66, 34, 47, 0.35);
+      }
+
+      .muestra {
+        margin: 15px 0 0;
+      }
+      .placa {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        border: 1px solid rgba(74, 44, 60, 0.35);
+        background: #e7c6d2;
+        opacity: 0;
+        transform: scale(0.985);
+        animation: aflorar 0.9s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+      }
+      .placa-vacia {
+        display: grid;
+        place-content: center;
+        text-align: center;
+        gap: 6px;
+        width: 100%;
+        aspect-ratio: 4/3;
+        border: 1px dashed rgba(74, 44, 60, 0.45);
+        background: repeating-linear-gradient(
+          -45deg,
+          rgba(74, 44, 60, 0.06) 0 6px,
+          transparent 6px 14px
+        );
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(66, 34, 47, 0.65);
+        padding: 16px;
+      }
+      .carrusel {
+        position: relative;
+      }
+      .carrusel-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 10px;
+      }
+      .carrusel-flecha {
+        width: 30px;
+        height: 30px;
+        border: 1px solid var(--ciruela);
+        background: var(--papel);
+        color: var(--ciruela);
+        font-size: 16px;
+        line-height: 1;
+        cursor: pointer;
+        border-radius: 50%;
+        flex: none;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+      .carrusel-flecha:hover {
+        background: var(--ciruela);
+        color: var(--papel);
+      }
+      .carrusel-puntos {
+        display: flex;
+        gap: 6px;
+      }
+      .punto {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(74, 44, 60, 0.28);
+        border: none;
+        padding: 0;
+        cursor: pointer;
+      }
+      .punto.activo {
+        background: var(--ciruela);
+      }
+      @keyframes aflorar {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .nota {
+        font-family: var(--serif);
+        font-size: 16.5px;
+        font-weight: 300;
+        line-height: 1.55;
+        margin: 13px 0 0;
+        color: rgba(66, 34, 47, 0.88);
+        max-width: 44ch;
+      }
+      .fecha-muestra {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: rgba(66, 34, 47, 0.55);
+        margin: 7px 0 0;
+      }
+
+      /* ---------- basamento ---------- */
+      .basamento {
+        padding: 46px 0 0 66px;
+        color: #fbe4ea;
+      }
+      .basamento h2 {
+        font-family: var(--serif);
+        font-weight: 300;
+        font-size: 30px;
+        margin: 0 0 14px;
+        line-height: 1.15;
+      }
+      .basamento p {
+        font-family: var(--serif);
+        font-weight: 300;
+        font-size: 17px;
+        line-height: 1.6;
+        max-width: 44ch;
+        color: #ebd2db;
+      }
+      .basamento .cierre {
+        font-style: italic;
+        color: #fff1f5;
+      }
+      .oculto {
+        display: none;
+      }
+      .reset {
+        margin-top: 40px;
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: rgba(255, 255, 255, 0.34);
+        cursor: pointer;
+        text-decoration: underline;
+      }
+
+      /* ---------- acceso a la mina ---------- */
+      .acceso-mina {
+        margin: 30px 0 4px;
+        max-width: 340px;
+      }
+      @keyframes asomar {
+        from {
+          opacity: 0;
+          transform: translateY(10px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .entrada-mina {
+        position: relative;
+        display: block;
+        width: 100%;
+        padding: 20px 22px 22px;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        overflow: hidden;
+        border-radius: 2px 2px 60px 60px / 2px 2px 34px 34px;
+        background:
+          radial-gradient(
+            120% 90% at 50% 0%,
+            rgba(203, 122, 156, 0.35),
+            transparent 60%
+          ),
+          linear-gradient(180deg, #2e1b26 0%, #1c0f16 100%);
+        box-shadow:
+          inset 0 0 0 1px rgba(242, 178, 200, 0.35),
+          0 10px 26px rgba(28, 15, 22, 0.45);
+        animation: asomar 0.6s ease both;
+      }
+      .entrada-mina:hover {
+        box-shadow:
+          inset 0 0 0 1px rgba(242, 178, 200, 0.6),
+          0 10px 26px rgba(28, 15, 22, 0.55);
+      }
+      .entrada-mina .veta {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          repeating-linear-gradient(
+            115deg,
+            transparent 0 18px,
+            rgba(242, 178, 200, 0.16) 18px 20px,
+            transparent 20px 42px
+          ),
+          repeating-linear-gradient(
+            25deg,
+            transparent 0 26px,
+            rgba(232, 201, 213, 0.09) 26px 27px,
+            transparent 27px 55px
+          );
+      }
+      .entrada-texto {
+        position: relative;
+        display: grid;
+        gap: 5px;
+      }
+      .entrada-pico {
+        font-size: 22px;
+        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+      }
+      .entrada-rotulo {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-style: italic;
+        font-size: 21px;
+        color: #fdeff3;
+      }
+      .entrada-sub {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.03em;
+        color: rgba(253, 239, 243, 0.62);
+      }
+
+      /* ---------- galería / mina ---------- */
+      .mina-telon {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        overflow-y: auto;
+        padding: 20px 16px 40px;
+        background:
+          radial-gradient(
+            120% 70% at 50% 0%,
+            rgba(203, 122, 156, 0.16),
+            transparent 55%
+          ),
+          var(--honda);
+      }
+      .mina-telon[hidden] {
+        display: none;
+      }
+      .mina-panel {
+        max-width: 640px;
+        margin: 0 auto;
+      }
+      .mina-cab {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 2px 22px;
+        border-bottom: 1px solid rgba(253, 239, 243, 0.18);
+        margin-bottom: 20px;
+      }
+      .mina-sello {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.06em;
+        color: rgba(253, 239, 243, 0.5);
+        margin: 0 0 6px;
+      }
+      .mina-cab h3 {
+        font-family: var(--serif);
+        font-weight: 300;
+        font-style: italic;
+        font-size: 26px;
+        color: #fdeff3;
+        margin: 0;
+        line-height: 1.15;
+      }
+      .mina-cerrar {
+        flex: none;
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(253, 239, 243, 0.35);
+        background: transparent;
+        color: #fdeff3;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+      .mina-cerrar:hover {
+        background: rgba(253, 239, 243, 0.12);
+      }
+      .mina-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+      }
+      .mina-cel {
+        position: relative;
+        aspect-ratio: 1;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        background: #3b2531 center/cover no-repeat;
+        overflow: hidden;
+      }
+      .mina-cel::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          200deg,
+          transparent 55%,
+          rgba(28, 15, 22, 0.55) 100%
+        );
+        transition: background 0.15s ease;
+      }
+      .mina-cel:hover::after {
+        background: linear-gradient(
+          200deg,
+          rgba(203, 122, 156, 0.15) 0%,
+          rgba(28, 15, 22, 0.35) 100%
+        );
+      }
+      .mina-num {
+        position: absolute;
+        left: 8px;
+        bottom: 7px;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: #fdeff3;
+        z-index: 1;
+      }
+      .mina-vacia {
+        display: grid;
+        place-content: center;
+        text-align: center;
+        gap: 4px;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          -45deg,
+          rgba(253, 239, 243, 0.06) 0 6px,
+          transparent 6px 14px
+        );
+        font-family: var(--mono);
+        font-size: 9.5px;
+        color: rgba(253, 239, 243, 0.55);
+        padding: 8px;
+      }
+
+      /* ---------- visor (lightbox) ---------- */
+      .visor {
+        position: fixed;
+        inset: 0;
+        z-index: 70;
+        background: rgba(15, 8, 12, 0.94);
+        display: grid;
+        place-items: center;
+        padding: 56px 20px;
+      }
+      .visor[hidden] {
+        display: none;
+      }
+      .visor-img {
+        max-width: min(90vw, 640px);
+        max-height: 70vh;
+        object-fit: contain;
+        border: 1px solid rgba(253, 239, 243, 0.25);
+      }
+      .visor-nota {
+        position: absolute;
+        bottom: 24px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: var(--serif);
+        font-style: italic;
+        font-weight: 300;
+        font-size: 15px;
+        color: #f3e4ea;
+        padding: 0 20px;
+      }
+      .visor-cerrar {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(253, 239, 243, 0.4);
+        background: transparent;
+        color: #fdeff3;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      .visor-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(253, 239, 243, 0.4);
+        background: rgba(28, 15, 22, 0.5);
+        color: #fdeff3;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+        border-radius: 50%;
+      }
+      .visor-prev {
+        left: 14px;
+      }
+      .visor-next {
+        right: 14px;
+      }
+      @media (max-width: 520px) {
+        .visor-nav {
+          width: 38px;
+          height: 38px;
+          font-size: 19px;
+        }
+        .visor-prev {
+          left: 6px;
+        }
+        .visor-next {
+          right: 6px;
+        }
+      }
+
+      /* ---------- modal ---------- */
+      .telon {
+        position: fixed;
+        inset: 0;
+        background: rgba(50, 26, 36, 0.84);
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 22px 16px;
+        overflow-y: auto;
+        z-index: 50;
+      }
+      .telon[hidden] {
+        display: none;
+      }
+      .panel {
+        background: var(--papel);
+        width: 100%;
+        max-width: 480px;
+        margin: auto;
+        border: 1px solid var(--ciruela);
+        padding: 24px 22px 26px;
+      }
+      .panel-cab {
+        border-bottom: 1px solid rgba(66, 34, 47, 0.18);
+        padding-bottom: 13px;
+        margin-bottom: 18px;
+      }
+      .panel-cab p {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: #9a6a7e;
+        margin: 0 0 5px;
+      }
+      .panel-cab h3 {
+        font-family: var(--serif);
+        font-weight: 400;
+        font-size: 25px;
+        margin: 0;
+        line-height: 1.15;
+      }
+      .consigna {
+        font-size: 14px;
+        color: #5c3546;
+        margin: 0 0 18px;
+        max-width: 46ch;
+      }
+      .aviso {
+        font-size: 13.5px;
+        min-height: 20px;
+        margin: 16px 0 0;
+        color: #a34d6b;
+      }
+      .aviso.ok {
+        color: #3e7a63;
+      }
+      .panel-pie {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+      }
+      .enlace-sec {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        font-family: var(--sans);
+        font-size: 13px;
+        color: #9a6a7e;
+        text-decoration: underline;
+      }
+      .marcador {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: #9a6a7e;
+        margin: 0 0 12px;
+      }
+
+      /* ---------- piezas de juego ---------- */
+      .rejilla {
+        display: grid;
+        gap: 7px;
+        margin: 0 auto;
+        max-width: 330px;
+      }
+      .rejilla.c3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .rejilla.c4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .ficha {
+        font-family: var(--serif);
+        font-size: 26px;
+        font-weight: 400;
+        aspect-ratio: 1;
+        display: grid;
+        place-content: center;
+        border: 1px solid var(--ciruela);
+        background: var(--e2);
+        color: var(--tinta);
+        cursor: pointer;
+        transition:
+          background 0.16s ease,
+          transform 0.16s ease;
+      }
+      .ficha:hover {
+        background: var(--e3);
+      }
+      .ficha.hueco {
+        background: transparent;
+        border-style: dashed;
+        border-color: rgba(66, 34, 47, 0.25);
+        cursor: default;
+      }
+      .ficha.hueco:hover {
+        background: transparent;
+      }
+
+      /* apaga las luces */
+      .foco {
+        aspect-ratio: 1;
+        border: 1px solid var(--ciruela);
+        background: #eadde3;
+        cursor: pointer;
+        transition: background 0.18s ease;
+      }
+      .foco.on {
+        background: var(--e4);
+        box-shadow: inset 0 0 0 4px var(--papel);
+      }
+
+      /* torre de hanói */
+      .torres {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        align-items: end;
+        margin-bottom: 4px;
+      }
+      .torre {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: 4px;
+        min-height: 150px;
+        padding: 8px 4px;
+        cursor: pointer;
+        border-bottom: 3px solid var(--ciruela);
+        background: rgba(246, 203, 218, 0.28);
+        transition: background 0.15s ease;
+      }
+      .torre:hover {
+        background: rgba(239, 178, 200, 0.5);
+      }
+      .torre.activa {
+        background: rgba(226, 147, 177, 0.6);
+      }
+      .disco {
+        height: 20px;
+        border: 1px solid var(--ciruela);
+        border-radius: 10px;
+      }
+
+      /* nonograma */
+      .nono {
+        display: grid;
+        gap: 3px;
+        margin: 0 auto;
+        width: max-content;
+      }
+      .nono-fila {
+        display: grid;
+        grid-template-columns: 62px repeat(5, 38px);
+        gap: 3px;
+        align-items: center;
+      }
+      .nono-pista {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: #7a4a5d;
+        text-align: right;
+        padding-right: 5px;
+        line-height: 1.25;
+      }
+      .nono-pista.arriba {
+        text-align: center;
+        padding: 0;
+        white-space: pre-line;
+        font-size: 10.5px;
+      }
+      .celda {
+        width: 38px;
+        height: 38px;
+        border: 1px solid rgba(110, 66, 87, 0.45);
+        background: var(--papel);
+        cursor: pointer;
+        transition: background 0.12s ease;
+      }
+      .celda.llena {
+        background: var(--e5);
+      }
+      .celda.marca {
+        background: var(--papel);
+        position: relative;
+      }
+      .celda.marca::after {
+        content: "·";
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        color: #b98ca0;
+        font-size: 20px;
+      }
+
+      /* sudoku */
+      .sud {
+        display: grid;
+        grid-template-columns: repeat(4, 52px);
+        gap: 2px;
+        width: max-content;
+        margin: 0 auto;
+        background: var(--ciruela);
+        padding: 2px;
+      }
+      .sud .celda-s {
+        width: 52px;
+        height: 52px;
+        display: grid;
+        place-content: center;
+        font-family: var(--serif);
+        font-size: 24px;
+        background: var(--papel);
+        border: none;
+        cursor: pointer;
+        color: var(--tinta);
+      }
+      .sud .celda-s.fija {
+        background: var(--e2);
+        cursor: default;
+        font-weight: 500;
+      }
+      .sud .celda-s:nth-child(4n + 3) {
+        border-left: 2px solid var(--ciruela);
+      }
+      .sud .celda-s:nth-child(n + 9):nth-child(-n + 12) {
+        border-top: 2px solid var(--ciruela);
+      }
+
+      /* código secreto */
+      .intentos {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 14px;
+        max-height: 190px;
+        overflow-y: auto;
+      }
+      .fila-int {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .peg {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid rgba(110, 66, 87, 0.5);
+        display: grid;
+        place-content: center;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(66, 34, 47, 0.55);
+      }
+      .peg.vacio {
+        background: transparent;
+        border-style: dashed;
+      }
+      .marcas {
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: #7a4a5d;
+        margin-left: 4px;
+      }
+      .fila-activa .peg {
+        cursor: pointer;
+      }
+      .acciones {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="envoltura">
+      <header class="superficie">
+        <p class="sello-campo" id="selloCampo">REGISTRO DE SONDEO · POZO 01</p>
+        <h1 class="titulo">Un núcleo de<br /><em>nosotros dos</em></h1>
+        <p class="bajada">
+          Perforé hacia abajo y encontré seis capas. Cada una guarda una
+          muestra. Para sacarla hay que resolver lo que la tiene sellada. ⚒ 
+        </p>
+
+        <section class="registro">
+          <p class="dias"><b id="numDias">—</b> <span>días juntos</span></p>
+          <p class="desglose" id="desglose">&nbsp;</p>
+          <ul class="lecturas" id="lecturas"></ul>
+        </section>
+
+        <p class="instruccion">
+          Perfora cada una de las capas: hasta que no abras una capa, la
+          siguiente sigue sellada. Empieza por la primera. ⚒💖
+        </p>
+      </header>
+
+      <ol class="nucleo" id="nucleo"></ol>
+
+      <footer class="basamento">
+        <div id="basamentoSellado">
+          <h2>Basamento</h2>
+          <p>
+            Debajo de la última capa hay algo más. Se abre cuando las seis estén
+            afuera. 🌠✨
+          </p>
+        </div>
+        <div id="basamentoAbierto" class="oculto">
+          <h2 id="tituloFinal">Basamento</h2>
+          <p id="textoFinal"></p>
+          <p class="cierre" id="cierreFinal"></p>
+
+          <div id="accesoMina" class="acceso-mina oculto">
+            <button class="entrada-mina" id="btnMina" type="button">
+              <span class="veta"></span>
+              <span class="entrada-texto">
+                <span class="entrada-pico">⛏</span>
+                <span class="entrada-rotulo">Entrar a la mina 🌎</span>
+                <span class="entrada-sub">Hay una veta más honda que esta</span>
+              </span>
+            </button>
+          </div>
+        </div>
+        <button class="reset" id="btnReset">reiniciar el sondeo</button>
+      </footer>
+    </div>
+
+    <div
+      class="telon"
+      id="telon"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloJuego"
+    >
+      <div class="panel">
+        <div class="panel-cab">
+          <p id="profJuego"></p>
+          <h3 id="tituloJuego"></h3>
+        </div>
+        <p class="consigna" id="consigna"></p>
+        <div id="tablero"></div>
+        <p class="aviso" id="aviso"></p>
+        <div class="panel-pie">
+          <button class="enlace-sec" id="btnCerrar">Salir sin perforar</button>
+          <button class="enlace-sec" id="btnOtra">Empezar de nuevo</button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="mina-telon"
+      id="minaTelon"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="minaTitulo"
+    >
+      <div class="mina-panel">
+        <div class="mina-cab">
+          <div>
+            <p class="mina-sello">GALERÍA · VETA PRINCIPAL</p>
+            <h3 id="minaTitulo">Lo que se sacó de la mina 💎💖</h3>
+          </div>
+          <button
+            class="mina-cerrar"
+            id="btnMinaCerrar"
+            aria-label="Cerrar galería"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="mina-grid" id="minaGrid"></div>
+      </div>
+    </div>
+
+    <div class="visor" id="visor" hidden role="dialog" aria-modal="true">
+      <button class="visor-cerrar" id="btnVisorCerrar" aria-label="Cerrar">
+        ✕
+      </button>
+      <button
+        class="visor-nav visor-prev"
+        id="btnVisorPrev"
+        aria-label="Anterior"
+      >
+        ‹
+      </button>
+      <img class="visor-img" id="visorImg" alt="" />
+      <button
+        class="visor-nav visor-next"
+        id="btnVisorNext"
+        aria-label="Siguiente"
+      >
+        ›
+      </button>
+      <p class="visor-nota" id="visorNota"></p>
+    </div>
+
+    <script>
+      /*   1. CONFIGURACIÓN */
+      const CONFIG = {
+        fechaInicio: "2026-03-18", // AAAA-MM-DD
+        nombrePozo: "REGISTRO DE SONDEO · POZO 01",
+
+        estratos: [
+          {
+            era: "Holoceno",
+            periodo: "0 – 11.7 ka · CUATERNARIO",
+            prof: "0",
+            tono: "var(--e1)",
+            fotos: [
+              "Imagenes/1.jpg",
+              "Imagenes/1b.jpg",
+              "Imagenes/1c.jpg",
+              "Imagenes/1d.jpg",
+              "Imagenes/1e.jpg",
+              "Imagenes/1f.jpg",
+              "Imagenes/1g.jpg",
+            ],
+            fecha: "Sep-Dic 2025",
+            nota: "La capa de arriba. Todavía se está formando, todos los días. <br> <strong>\"Todo Tuvo un comienzo 💖\"</strong>",
+          },
+
+          {
+            era: "Pleistoceno",
+            periodo: "11.7 ka – 2.58 Ma · CUATERNARIO",
+            prof: "12",
+            tono: "var(--e2)",
+            fotos: [
+              "Imagenes/2.jpg",
+              "Imagenes/2b.jpg",
+              "Imagenes/2c.jpg",
+              "Imagenes/2e.jpg",
+              "Imagenes/2f.jpg",
+              "Imagenes/2g.jpg",
+              "Imagenes/2h.jpg",
+              "Imagenes/2i.jpg",
+              "Imagenes/2j.jpg",
+            ],
+            fecha: "Feb-Mar 2026",
+            nota: "Aquí ya sabíamos movernos juntos, aunque el clima cambiara. <br> <strong>\"Pero siempre juntos 💖🌟\"</strong>",
+          },
+
+          {
+            era: "Neógeno",
+            periodo: "2.58 – 23 Ma",
+            prof: "26",
+            tono: "var(--e3)",
+            fotos: [
+              "Imagenes/3.jpg",
+              "Imagenes/3b.jpg",
+              "Imagenes/3c.jpg",
+              "Imagenes/3d.jpg",
+              "Imagenes/3e.jpg",
+              "Imagenes/3f.jpg",
+              "Imagenes/3g.jpg",
+              "Imagenes/3h.jpg",
+              "Imagenes/3i.jpg",
+              "Imagenes/3j.jpg",
+            ],
+            fecha: "Mar-Abr 2026",
+            nota: "Una capa gruesa. De las que tardan en depositarse y se notan. <br> <strong>\"El Comienzo de un largo camino. 🛣️\"</strong>",
+          },
+
+          {
+            era: "Paleógeno",
+            periodo: "23 – 66 Ma",
+            prof: "41",
+            tono: "var(--e4)",
+            fotos: [
+              "Imagenes/4.jpg",
+              "Imagenes/4b.jpg",
+              "Imagenes/4c.jpg",
+              "Imagenes/4d.jpg",
+              "Imagenes/4e.jpg",
+              "Imagenes/4f.jpg",
+              "Imagenes/4g.jpg",
+              "Imagenes/4h.jpg",
+              "Imagenes/4i.jpg",
+              "Imagenes/4j.jpg",
+              "Imagenes/4k.jpg",
+              "Imagenes/4l.jpg",
+              "Imagenes/4m.jpg",
+            ],
+            fecha: "May-Jul 2026",
+            nota: "Lo que vino después del impacto. Empezar de cero, pero contigo. <br> <strong>\"Un gran comienzo con mucho que contar y momentos inolvidables que recordaremos para siempre. 🤗💖\"</strong>",
+          },
+
+          {
+            era: "Cretácico",
+            periodo: "66 – 145 Ma · MESOZOICO",
+            prof: "57",
+            tono: "var(--e5)",
+            fotos: [
+              "Imagenes/5.jpg",
+              "Imagenes/5b.jpg",
+              "Imagenes/5c.jpg",
+              "Imagenes/5d.jpg",
+              "Imagenes/5e.jpg",
+              "Imagenes/5f.jpg",
+              "Imagenes/5g.jpg",
+              "Imagenes/5h.jpg",
+              "Imagenes/5i.jpg",
+              "Imagenes/5j.jpg",
+              "Imagenes/5k.jpg",
+              "Imagenes/5l.jpg",
+              "Imagenes/5m.jpg",
+              "Imagenes/5n.jpg",
+              "Imagenes/5o.jpg",
+            ],
+            fecha: "Jul 2026",
+            nota: "Aquí el mapa todavía no tenía la forma que tendra en el futuro. <br> <strong>\"Pero lo construiremos juntos. 🤝💖\"</strong>",
+          },
+
+          {
+            era: "Jurásico",
+            periodo: "145 – 201 Ma · MESOZOICO",
+            prof: "74",
+            tono: "var(--e6)",
+            fotos: [
+              "Imagenes/6.jpg",
+              "Imagenes/6b.jpg",
+              "Imagenes/6c.jpg",
+              "Imagenes/6d.jpg",
+              "Imagenes/6e.jpg",
+              "Imagenes/6f.jpg",
+              "Imagenes/6ff.jpg",
+              "Imagenes/6g.jpg",
+              "Imagenes/6h.jpg",
+              "Imagenes/6i.jpg",
+            ],
+            fecha: "Ago 2026",
+            nota: "La muestra más profunda. Todo lo de arriba se apoya en esta. <br> <strong>\"En Momentos dificiles el apoyo es lo que nos mantiene unidos. 💖\"</strong>",
+          },
+        ],
+
+        final: {
+          titulo: "Basamento",
+          texto:
+            "Debajo de todas las capas hay roca que no se depositó: estaba ahí desde antes. Eso es lo que siento por ti.",
+          cierre: "Felices 6 Meses. Te amooooo Infinitamente, gracias por darme la oportunidad de vivir estos momentos contigo y los que faltan. 💖",
+        },
+
+        // Galería
+        galeria: [
+          { foto: "Imagenes/1.jpg", nota: "" },
+          { foto: "Imagenes/1b.jpg", nota: "" },
+          { foto: "Imagenes/1c.jpg", nota: "" },
+          { foto: "Imagenes/1d.jpg", nota: "" },
+          { foto: "Imagenes/1e.jpg", nota: "" },
+          { foto: "Imagenes/1f.jpg", nota: "" },
+          { foto: "Imagenes/1g.jpg", nota: "" },
+          { foto: "Imagenes/2.jpg", nota: "" },
+          { foto: "Imagenes/2b.jpg", nota: "" },
+          { foto: "Imagenes/2c.jpg", nota: "" },
+          { foto: "Imagenes/2e.jpg", nota: "" },
+          { foto: "Imagenes/2f.jpg", nota: "" },
+          { foto: "Imagenes/2g.jpg", nota: "" },
+          { foto: "Imagenes/2h.jpg", nota: "" },
+          { foto: "Imagenes/2i.jpg", nota: "" },
+          { foto: "Imagenes/2j.jpg", nota: "" },
+          { foto: "Imagenes/3.jpg", nota: "" },
+          { foto: "Imagenes/3b.jpg", nota: "" },
+          { foto: "Imagenes/3c.jpg", nota: "" },
+          { foto: "Imagenes/3d.jpg", nota: "" },
+          { foto: "Imagenes/3e.jpg", nota: "" },
+          { foto: "Imagenes/3f.jpg", nota: "" },
+          { foto: "Imagenes/3g.jpg", nota: "" },
+          { foto: "Imagenes/3h.jpg", nota: "" },
+          { foto: "Imagenes/3i.jpg", nota: "" },
+          { foto: "Imagenes/3j.jpg", nota: "" },
+          { foto: "Imagenes/4.jpg", nota: "" },
+          { foto: "Imagenes/4b.jpg", nota: "" },
+          { foto: "Imagenes/4c.jpg", nota: "" },
+          { foto: "Imagenes/4d.jpg", nota: "" },
+          { foto: "Imagenes/4e.jpg", nota: "" },
+          { foto: "Imagenes/4f.jpg", nota: "" },
+          { foto: "Imagenes/4g.jpg", nota: "" },
+          { foto: "Imagenes/4h.jpg", nota: "" },
+          { foto: "Imagenes/4i.jpg", nota: "" },
+          { foto: "Imagenes/4j.jpg", nota: "" },
+          { foto: "Imagenes/4k.jpg", nota: "" },
+          { foto: "Imagenes/4l.jpg", nota: "" },
+          { foto: "Imagenes/4m.jpg", nota: "" },
+          { foto: "Imagenes/5.jpg", nota: "" },
+          { foto: "Imagenes/5b.jpg", nota: "" },
+          { foto: "Imagenes/5c.jpg", nota: "" },
+          { foto: "Imagenes/5d.jpg", nota: "" },
+          { foto: "Imagenes/5e.jpg", nota: "" },
+          { foto: "Imagenes/5f.jpg", nota: "" },
+          { foto: "Imagenes/5g.jpg", nota: "" },
+          { foto: "Imagenes/5h.jpg", nota: "" },
+          { foto: "Imagenes/5i.jpg", nota: "" },
+          { foto: "Imagenes/5j.jpg", nota: "" },
+          { foto: "Imagenes/5k.jpg", nota: "" },
+          { foto: "Imagenes/5l.jpg", nota: "" },
+          { foto: "Imagenes/5m.jpg", nota: "" },
+          { foto: "Imagenes/5n.jpg", nota: "" },
+          { foto: "Imagenes/5o.jpg", nota: "" },
+          { foto: "Imagenes/6.jpg", nota: "" },
+          { foto: "Imagenes/6b.jpg", nota: "" },
+          { foto: "Imagenes/6c.jpg", nota: "" },
+          { foto: "Imagenes/6d.jpg", nota: "" },
+          { foto: "Imagenes/6e.jpg", nota: "" },
+          { foto: "Imagenes/6f.jpg", nota: "" },
+          { foto: "Imagenes/6ff.jpg", nota: "" },
+          { foto: "Imagenes/6g.jpg", nota: "" },
+          { foto: "Imagenes/6h.jpg", nota: "" },
+          { foto: "Imagenes/6i.jpg", nota: "" },
+        ],
+      };
+
+      //2. DÍAS JUNTOS
+
+      const MS_DIA = 86400000;
+
+      function diasJuntos() {
+        const i = new Date(CONFIG.fechaInicio + "T00:00:00");
+        const h = new Date();
+        h.setHours(0, 0, 0, 0);
+        return Math.max(0, Math.round((h - i) / MS_DIA));
+      }
+
+      function desglosar() {
+        const i = new Date(CONFIG.fechaInicio + "T00:00:00");
+        const h = new Date();
+        h.setHours(0, 0, 0, 0);
+        let a = h.getFullYear() - i.getFullYear();
+        let m = h.getMonth() - i.getMonth();
+        let d = h.getDate() - i.getDate();
+        if (d < 0) {
+          m--;
+          d += new Date(h.getFullYear(), h.getMonth(), 0).getDate();
+        }
+        if (m < 0) {
+          a--;
+          m += 12;
+        }
+        return `${a} años · ${m} meses · ${d} días`;
+      }
+
+      function lecturasDeCampo(dias) {
+        const anios = dias / 365.25;
+        const proxCien = 100 - (dias % 100);
+        return [
+          `El Atlántico se abrió ${(anios * 2.5).toFixed(1)} cm desde que estamos juntos.`,
+          `En el fondo del mar se depositaron ${Math.round(anios * 10)} µm de sedimento sobre ese día.`,
+          `Una estalagmita creció ${(anios * 0.1).toFixed(2)} mm mientras tanto.`,
+          `Faltan ${proxCien} días para el día ${dias + proxCien}.`,
+        ];
+      }
+
+      //3. PROGRESO
+
+      const LLAVE = "nucleo.progreso.v2";
+      function leerProgreso() {
+        try {
+          return parseInt(localStorage.getItem(LLAVE) || "0", 10) || 0;
+        } catch (e) {
+          return 0;
+        }
+      }
+      function guardarProgreso(n) {
+        try {
+          localStorage.setItem(LLAVE, String(n));
+        } catch (e) {}
+      }
+      let abiertos = leerProgreso();
+      let indiceFoto = CONFIG.estratos.map(() => 0); // qué foto se ve en cada capa que tiene varias
+
+      const LLAVE_MINA = "nucleo.mina.v1";
+      function minaDesbloqueada() {
+        try {
+          return localStorage.getItem(LLAVE_MINA) === "1";
+        } catch (e) {
+          return false;
+        }
+      }
+      function desbloquearMina() {
+        try {
+          localStorage.setItem(LLAVE_MINA, "1");
+        } catch (e) {}
+      }
+      function bloquearMina() {
+        try {
+          localStorage.removeItem(LLAVE_MINA);
+        } catch (e) {}
+      }
+
+      //4. LOS SEIS PUZLES
+
+      const $ = (s) => document.querySelector(s);
+      const aviso = (t, ok = false) => {
+        const a = $("#aviso");
+        a.textContent = t;
+        a.classList.toggle("ok", ok);
+      };
+      const nodo = (tag, cls, html) => {
+        const n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (html !== undefined) n.innerHTML = html;
+        return n;
+      };
+
+      //1. Taquín 3×3
+      function puzleTaquin(caja, ganar) {
+        const N = 3,
+          META = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+        let tablero = META.slice();
+
+        const vecinos = (h) => {
+          const f = Math.floor(h / N),
+            c = h % N,
+            v = [];
+          if (f > 0) v.push(h - N);
+          if (f < N - 1) v.push(h + N);
+          if (c > 0) v.push(h - 1);
+          if (c < N - 1) v.push(h + 1);
+          return v;
+        };
+
+        // Revolver haciendo movimientos legales: así siempre tiene solución
+        let hueco = 8,
+          previo = -1;
+        do {
+          tablero = META.slice();
+          hueco = 8;
+          previo = -1;
+          for (let k = 0; k < 120; k++) {
+            const opciones = vecinos(hueco).filter((x) => x !== previo);
+            const elegida =
+              opciones[Math.floor(Math.random() * opciones.length)];
+            tablero[hueco] = tablero[elegida];
+            tablero[elegida] = 0;
+            previo = hueco;
+            hueco = elegida;
+          }
+        } while (tablero.every((v, k) => v === META[k]));
+
+        const rejilla = nodo("div", "rejilla c3");
+        caja.appendChild(
+          nodo("p", "marcador", "Deja los números del 1 al 8 en orden."),
+        );
+        caja.appendChild(rejilla);
+
+        function pintar() {
+          rejilla.innerHTML = "";
+          tablero.forEach((v, i) => {
+            const b = nodo(
+              "button",
+              "ficha" + (v === 0 ? " hueco" : ""),
+              v === 0 ? "" : String(v),
+            );
+            if (v !== 0) b.addEventListener("click", () => mover(i));
+            rejilla.appendChild(b);
+          });
+        }
+
+        function mover(i) {
+          const h = tablero.indexOf(0);
+          if (!vecinos(i).includes(h)) return;
+          tablero[h] = tablero[i];
+          tablero[i] = 0;
+          pintar();
+          if (tablero.every((v, k) => v === META[k])) ganar();
+        }
+        pintar();
+      }
+
+      //2. Apaga las luces
+      function puzleLuces(caja, ganar) {
+        const N = 3;
+        let luces = new Array(N * N).fill(true);
+
+        const voltear = (i) => {
+          const f = Math.floor(i / N),
+            c = i % N;
+          [
+            [0, 0],
+            [1, 0],
+            [-1, 0],
+            [0, 1],
+            [0, -1],
+          ].forEach(([df, dc]) => {
+            const nf = f + df,
+              nc = c + dc;
+            if (nf >= 0 && nf < N && nc >= 0 && nc < N)
+              luces[nf * N + nc] = !luces[nf * N + nc];
+          });
+        };
+
+        // Se revuelve aplicando clics reales: siempre se puede deshacer
+        do {
+          luces = new Array(N * N).fill(true);
+          const golpes = 3 + Math.floor(Math.random() * 3);
+          for (let k = 0; k < golpes; k++)
+            voltear(Math.floor(Math.random() * N * N));
+        } while (luces.every(Boolean));
+
+        caja.appendChild(
+          nodo(
+            "p",
+            "marcador",
+            "Cada toque cambia la casilla y sus cuatro vecinas.",
+          ),
+        );
+        const rejilla = nodo("div", "rejilla c3");
+        caja.appendChild(rejilla);
+
+        function pintar() {
+          rejilla.innerHTML = "";
+          luces.forEach((on, i) => {
+            const b = nodo("button", "foco" + (on ? " on" : ""));
+            b.setAttribute("aria-label", on ? "encendida" : "apagada");
+            b.addEventListener("click", () => {
+              voltear(i);
+              pintar();
+              if (luces.every(Boolean)) ganar();
+            });
+            rejilla.appendChild(b);
+          });
+        }
+        pintar();
+      }
+
+      //3. Torre de Hanói (4 discos)
+      function puzleHanoi(caja, ganar) {
+        const DISCOS = 4;
+        const TONOS = ["var(--e5)", "var(--e4)", "var(--e3)", "var(--e2)"];
+        let torres = [[4, 3, 2, 1], [], []]; // número grande = disco grande, abajo
+        let origen = null,
+          movs = 0;
+
+        const info = nodo(
+          "p",
+          "marcador",
+          "Movimientos: 0 · mínimo posible: 15",
+        );
+        caja.appendChild(info);
+        const zona = nodo("div", "torres");
+        caja.appendChild(zona);
+
+        function pintar() {
+          zona.innerHTML = "";
+          torres.forEach((t, i) => {
+            const col = nodo("div", "torre" + (origen === i ? " activa" : ""));
+            col.setAttribute("role", "button");
+            col.setAttribute("tabindex", "0");
+            t.forEach((d) => {
+              const disco = nodo("div", "disco");
+              disco.style.width = 32 + d * 16 + "px";
+              disco.style.background = TONOS[d - 1];
+              col.appendChild(disco);
+            });
+            const accion = () => tocar(i);
+            col.addEventListener("click", accion);
+            col.addEventListener("keydown", (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                accion();
+              }
+            });
+            zona.appendChild(col);
+          });
+          info.textContent = `Movimientos: ${movs} · mínimo posible: 15`;
+        }
+
+        function tocar(i) {
+          if (origen === null) {
+            if (!torres[i].length) {
+              aviso("Esa torre está vacía.");
+              return;
+            }
+            origen = i;
+            aviso("");
+            pintar();
+            return;
+          }
+          if (origen === i) {
+            origen = null;
+            pintar();
+            return;
+          }
+
+          const disco = torres[origen][torres[origen].length - 1];
+          const cima = torres[i][torres[i].length - 1];
+          if (cima !== undefined && cima < disco) {
+            aviso("No puedes poner un disco grande sobre uno más chico.");
+            origen = null;
+            pintar();
+            return;
+          }
+          torres[origen].pop();
+          torres[i].push(disco);
+          origen = null;
+          movs++;
+          aviso("");
+          pintar();
+          if (torres[2].length === DISCOS) ganar();
+        }
+        pintar();
+      }
+
+      //4. Nonograma 5×5
+      function puzleNonograma(caja, ganar) {
+        const SOL = [
+          [0, 1, 0, 1, 0],
+          [1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1],
+          [0, 1, 1, 1, 0],
+          [0, 0, 1, 0, 0],
+        ];
+        const N = 5;
+        const estado = SOL.map((f) => f.map(() => 0)); // 0 vacío · 1 lleno · 2 marcado
+
+        const pistas = (linea) => {
+          const r = [];
+          let n = 0;
+          linea.forEach((v) => {
+            if (v) {
+              n++;
+            } else if (n) {
+              r.push(n);
+              n = 0;
+            }
+          });
+          if (n) r.push(n);
+          return r.length ? r : [0];
+        };
+        const pistasFila = SOL.map(pistas);
+        const pistasCol = Array.from({ length: N }, (_, c) =>
+          pistas(SOL.map((f) => f[c])),
+        );
+
+        caja.appendChild(
+          nodo(
+            "p",
+            "marcador",
+            "Toca para pintar. Toca de nuevo para descartar.",
+          ),
+        );
+        const tabla = nodo("div", "nono");
+
+        const cabecera = nodo("div", "nono-fila");
+        cabecera.appendChild(nodo("div", "nono-pista", ""));
+        pistasCol.forEach((p) =>
+          cabecera.appendChild(nodo("div", "nono-pista arriba", p.join("\n"))),
+        );
+        tabla.appendChild(cabecera);
+
+        const celdas = [];
+        for (let f = 0; f < N; f++) {
+          const fila = nodo("div", "nono-fila");
+          fila.appendChild(nodo("div", "nono-pista", pistasFila[f].join(" ")));
+          for (let c = 0; c < N; c++) {
+            const b = nodo("button", "celda");
+            b.addEventListener("click", () => {
+              estado[f][c] = (estado[f][c] + 1) % 3;
+              b.className =
+                "celda" +
+                (estado[f][c] === 1
+                  ? " llena"
+                  : estado[f][c] === 2
+                    ? " marca"
+                    : "");
+              if (
+                estado.every((fila2, i) =>
+                  fila2.every((v, j) => (v === 1 ? 1 : 0) === SOL[i][j]),
+                )
+              )
+                ganar();
+            });
+            celdas.push(b);
+            fila.appendChild(b);
+          }
+          tabla.appendChild(fila);
+        }
+        caja.appendChild(tabla);
+      }
+
+      //5. Sudoku 4×4
+      function puzleSudoku(caja, ganar) {
+        const SOL = [1, 2, 3, 4, 3, 4, 1, 2, 2, 1, 4, 3, 4, 3, 2, 1];
+        const DADO = [1, 0, 3, 0, 0, 4, 0, 2, 2, 0, 4, 0, 0, 3, 0, 1];
+        const valores = DADO.slice();
+
+        caja.appendChild(
+          nodo(
+            "p",
+            "marcador",
+            "Del 1 al 4 sin repetir en fila, columna ni cuadro. Toca para cambiar el número.",
+          ),
+        );
+        const rejilla = nodo("div", "sud");
+
+        valores.forEach((v, i) => {
+          const fijo = DADO[i] !== 0;
+          const b = nodo(
+            "button",
+            "celda-s" + (fijo ? " fija" : ""),
+            v ? String(v) : "",
+          );
+          if (!fijo) {
+            b.addEventListener("click", () => {
+              valores[i] = (valores[i] + 1) % 5;
+              b.textContent = valores[i] || "";
+              if (valores.every((x, k) => x === SOL[k])) ganar();
+            });
+          }
+          rejilla.appendChild(b);
+        });
+        caja.appendChild(rejilla);
+      }
+
+      //6. El código secreto (Mastermind) ----------
+      function puzleCodigo(caja, ganar) {
+        const COLORES = [
+          { n: "R", c: "#F2A0B8" },
+          { n: "D", c: "#F7C59F" },
+          { n: "L", c: "#C7B3E0" },
+          { n: "M", c: "#A8D5C2" },
+          { n: "C", c: "#F5E6A8" },
+        ];
+        const LARGO = 4;
+        const secreto = Array.from({ length: LARGO }, () =>
+          Math.floor(Math.random() * COLORES.length),
+        );
+        let actual = new Array(LARGO).fill(null);
+
+        caja.appendChild(
+          nodo(
+            "p",
+            "marcador",
+            "● en su lugar · ○ color correcto, lugar equivocado",
+          ),
+        );
+        const historial = nodo("div", "intentos");
+        caja.appendChild(historial);
+
+        const fila = nodo("div", "fila-int fila-activa");
+        const pegs = [];
+        for (let i = 0; i < LARGO; i++) {
+          const p = nodo("button", "peg vacio", "?");
+          p.addEventListener("click", () => {
+            actual[i] =
+              actual[i] === null ? 0 : (actual[i] + 1) % COLORES.length;
+            p.className = "peg";
+            p.style.background = COLORES[actual[i]].c;
+            p.textContent = COLORES[actual[i]].n;
+            aviso("");
+          });
+          pegs.push(p);
+          fila.appendChild(p);
+        }
+        caja.appendChild(fila);
+
+        const acciones = nodo("div", "acciones");
+        const btn = nodo("button", "btn", "Comprobar");
+        acciones.appendChild(btn);
+        caja.appendChild(acciones);
+
+        btn.addEventListener("click", () => {
+          if (actual.some((v) => v === null)) {
+            aviso("Faltan colores por elegir.");
+            return;
+          }
+
+          let exactos = 0;
+          const restoSec = [],
+            restoInt = [];
+          actual.forEach((v, i) => {
+            if (v === secreto[i]) exactos++;
+            else {
+              restoSec.push(secreto[i]);
+              restoInt.push(v);
+            }
+          });
+          let parciales = 0;
+          const disponibles = restoSec.slice();
+          restoInt.forEach((v) => {
+            const k = disponibles.indexOf(v);
+            if (k !== -1) {
+              parciales++;
+              disponibles.splice(k, 1);
+            }
+          });
+
+          const registro = nodo("div", "fila-int");
+          actual.forEach((v) => {
+            const p = nodo("div", "peg", COLORES[v].n);
+            p.style.background = COLORES[v].c;
+            registro.appendChild(p);
+          });
+          registro.appendChild(
+            nodo(
+              "span",
+              "marcas",
+              "●".repeat(exactos) + "○".repeat(parciales) || "—",
+            ),
+          );
+          historial.appendChild(registro);
+          historial.scrollTop = historial.scrollHeight;
+
+          if (exactos === LARGO) ganar();
+          else aviso(`${exactos} en su lugar, ${parciales} de color correcto.`);
+        });
+      }
+
+      const JUEGOS = [
+        {
+          titulo: "Rompecabezas deslizante",
+          consigna: "Mueve las piezas al hueco hasta dejarlas en orden.",
+          montar: puzleTaquin,
+        },
+        {
+          titulo: "Enciende todo",
+          consigna:
+            "Tienes que dejar las nueve casillas encendidas. Cada toque afecta también a las de al lado.",
+          montar: puzleLuces,
+        },
+        {
+          titulo: "Torre de Hanói",
+          consigna:
+            "Pasa los cuatro discos a la torre de la derecha. Nunca uno grande sobre uno chico.",
+          montar: puzleHanoi,
+        },
+        {
+          titulo: "Nonograma",
+          consigna:
+            "Los números dicen cuántas casillas seguidas se pintan en esa fila o columna.",
+          montar: puzleNonograma,
+        },
+        {
+          titulo: "Sudoku 4×4",
+          consigna: "Completa la cuadrícula sin repetir números.",
+          montar: puzleSudoku,
+        },
+        {
+          titulo: "El código secreto",
+          consigna:
+            "Adivina la combinación de cuatro colores. Tienes intentos infinitos.",
+          montar: puzleCodigo,
+        },
+      ];
+
+      // Devuelve siempre una lista de fotos, aceptando tanto "fotos:[...]"
+      function fotosDe(e) {
+        if (e.fotos && e.fotos.length) return e.fotos;
+        if (e.foto) return [e.foto];
+        return [];
+      }
+
+      function cambiarFoto(i, dir) {
+        const fotos = fotosDe(CONFIG.estratos[i]);
+        if (fotos.length < 2) return;
+        indiceFoto[i] =
+          ((indiceFoto[i] || 0) + dir + fotos.length) % fotos.length;
+        actualizarFotoEnDom(i);
+      }
+
+      function fijarFoto(i, idx) {
+        indiceFoto[i] = idx;
+        actualizarFotoEnDom(i);
+      }
+
+      // Cambia solo la imagen y los puntos de esa capa, sin repintar toda la página
+      function actualizarFotoEnDom(i) {
+        const e = CONFIG.estratos[i],
+          fotos = fotosDe(e),
+          idx = indiceFoto[i];
+        const cont = document.getElementById("carrusel-" + i);
+        if (!cont) return;
+        const img = cont.querySelector("img.placa");
+        if (img) {
+          img.src = fotos[idx];
+          img.dataset.falla = fotos[idx];
+        }
+        const li = cont.closest(".estrato");
+        if (!li) return;
+        li.querySelectorAll(".punto").forEach((p, k) =>
+          p.classList.toggle("activo", k === idx),
+        );
+        const contador = li.querySelector(".fecha-muestra");
+        if (contador)
+          contador.textContent = `MUESTRA ${String(i + 1).padStart(2, "0")} · ${e.fecha} · foto ${idx + 1} de ${fotos.length}`;
+      }
+
+      //5. PINTAR LA PÁGINA
+
+      function pintarCabecera() {
+        const d = diasJuntos();
+        $("#selloCampo").textContent = CONFIG.nombrePozo;
+        $("#numDias").textContent = d.toLocaleString("es-MX");
+        $("#desglose").textContent = desglosar();
+        $("#lecturas").innerHTML = lecturasDeCampo(d)
+          .map((t) => `<li>${t}</li>`)
+          .join("");
+      }
+
+      function pintarNucleo() {
+        const lista = $("#nucleo");
+        lista.innerHTML = "";
+
+        CONFIG.estratos.forEach((e, i) => {
+          const abierto = i < abiertos;
+          const enTurno = i === abiertos;
+          const li = nodo("li", "estrato" + (abierto ? "" : " sellado"));
+
+          let cuerpo;
+          if (abierto) {
+            const fotos = fotosDe(e);
+            const idx = (indiceFoto[i] = Math.min(
+              indiceFoto[i] || 0,
+              Math.max(0, fotos.length - 1),
+            ));
+            const img = fotos.length
+              ? `<img class="placa" src="${fotos[idx]}" alt="Nosotros — ${e.era}" data-falla="${fotos[idx]}">`
+              : `<div class="placa-vacia">sin muestra</div>`;
+            const nav =
+              fotos.length > 1
+                ? `
+        <div class="carrusel-nav">
+          <button class="carrusel-flecha" data-nivel="${i}" data-dir="-1" aria-label="Foto anterior">‹</button>
+          <div class="carrusel-puntos">
+            ${fotos.map((_, k) => `<button class="punto${k === idx ? " activo" : ""}" data-nivel="${i}" data-idx="${k}" aria-label="Foto ${k + 1}"></button>`).join("")}
+          </div>
+          <button class="carrusel-flecha" data-nivel="${i}" data-dir="1" aria-label="Foto siguiente">›</button>
+        </div>`
+                : "";
+            const contador =
+              fotos.length > 1 ? ` · foto ${idx + 1} de ${fotos.length}` : "";
+            cuerpo = `<div class="muestra">
+                  <div class="carrusel" id="carrusel-${i}">${img}</div>
+                  ${nav}
+                  <p class="nota">${e.nota}</p>
+                  <p class="fecha-muestra">MUESTRA ${String(i + 1).padStart(2, "0")} · ${e.fecha}${contador}</p>
+                </div>`;
+          } else {
+            cuerpo = `<div class="estado">
+                  <button class="btn" data-nivel="${i}" ${enTurno ? "" : "disabled"}>Perforar</button>
+                  <p class="pista">${enTurno ? "Capa lista para perforar." : "Sellada por la capa de arriba."}</p>
+                </div>`;
+          }
+
+          li.innerHTML = `
+      <div class="prof">${e.prof} m</div>
+      <div class="banda" style="--tono:${e.tono}">
+        <h2 class="era">${e.era}</h2>
+        <p class="periodo">${e.periodo}</p>
+        ${cuerpo}
+      </div>`;
+          lista.appendChild(li);
+        });
+
+        lista
+          .querySelectorAll("button.btn[data-nivel]")
+          .forEach((b) =>
+            b.addEventListener("click", () =>
+              abrirJuego(parseInt(b.dataset.nivel, 10)),
+            ),
+          );
+
+        lista
+          .querySelectorAll(".carrusel-flecha")
+          .forEach((b) =>
+            b.addEventListener("click", () =>
+              cambiarFoto(
+                parseInt(b.dataset.nivel, 10),
+                parseInt(b.dataset.dir, 10),
+              ),
+            ),
+          );
+
+        lista
+          .querySelectorAll(".punto")
+          .forEach((p) =>
+            p.addEventListener("click", () =>
+              fijarFoto(
+                parseInt(p.dataset.nivel, 10),
+                parseInt(p.dataset.idx, 10),
+              ),
+            ),
+          );
+
+        lista.querySelectorAll("img.placa").forEach((img) => {
+          img.addEventListener("error", () => {
+            const hueco = nodo(
+              "div",
+              "placa-vacia",
+              `muestra no cargada<br>coloca la foto en <b>${img.dataset.falla}</b>`,
+            );
+            img.replaceWith(hueco);
+          });
+        });
+
+        const listo = abiertos >= CONFIG.estratos.length;
+        $("#basamentoSellado").classList.toggle("oculto", listo);
+        $("#basamentoAbierto").classList.toggle("oculto", !listo);
+        if (listo) {
+          $("#tituloFinal").textContent = CONFIG.final.titulo;
+          $("#textoFinal").textContent = CONFIG.final.texto;
+          $("#cierreFinal").textContent = CONFIG.final.cierre;
+          if (minaDesbloqueada()) mostrarAccesoMina();
+        }
+      }
+
+      function mostrarAccesoMina() {
+        $("#accesoMina").classList.remove("oculto");
+      }
+
+      //6. MODAL
+
+      let nivelActivo = null;
+
+      function abrirJuego(i) {
+        nivelActivo = i;
+        const j = JUEGOS[i],
+          e = CONFIG.estratos[i];
+        $("#profJuego").textContent =
+          `PROFUNDIDAD ${e.prof} m · ${e.era.toUpperCase()}`;
+        $("#tituloJuego").textContent = j.titulo;
+        $("#consigna").textContent = j.consigna;
+        aviso("");
+        const t = $("#tablero");
+        t.innerHTML = "";
+        j.montar(t, () => completar(i));
+        $("#telon").hidden = false;
+        document.body.style.overflow = "hidden";
+      }
+
+      function cerrarJuego() {
+        $("#telon").hidden = true;
+        document.body.style.overflow = "";
+        nivelActivo = null;
+      }
+
+      function completar(i) {
+        aviso("Muestra extraída.", true);
+        const esUltimaCapa = i === CONFIG.estratos.length - 1;
+        const desbloqueaMina =
+          esUltimaCapa && i === abiertos && !minaDesbloqueada();
+
+        setTimeout(() => {
+          if (i === abiertos) {
+            abiertos = i + 1;
+            guardarProgreso(abiertos);
+          }
+          cerrarJuego();
+          pintarNucleo();
+          const destino = document.querySelectorAll(".estrato")[i];
+          if (destino) destino.scrollIntoView({ block: "center" });
+
+          // La foto de la última capa se queda a la vista 10 segundos
+          // antes de que aparezca la entrada a la mina.
+          if (desbloqueaMina) {
+            setTimeout(() => {
+              desbloquearMina();
+              mostrarAccesoMina();
+              const acceso = $("#accesoMina");
+              if (acceso)
+                acceso.scrollIntoView({ block: "center", behavior: "smooth" });
+            }, 10000);
+          }
+        }, 900);
+      }
+
+      $("#btnCerrar").addEventListener("click", cerrarJuego);
+      $("#btnOtra").addEventListener("click", () => {
+        if (nivelActivo !== null) abrirJuego(nivelActivo);
+      });
+      document.addEventListener("keydown", (ev) => {
+        if (ev.key === "Escape" && !$("#telon").hidden) cerrarJuego();
+      });
+      $("#btnReset").addEventListener("click", () => {
+        abiertos = 0;
+        guardarProgreso(0);
+        bloquearMina(); // vuelve a sellar la entrada a la mina también
+        $("#accesoMina").classList.add("oculto");
+        pintarNucleo();
+        window.scrollTo({ top: 0 });
+      });
+
+      //7. LA MINA (galería de fotos)
+      let indiceVisor = 0;
+
+      function pintarGaleria() {
+        const rejilla = $("#minaGrid");
+        rejilla.innerHTML = "";
+        CONFIG.galeria.forEach((f, i) => {
+          const b = nodo("button", "mina-cel");
+          b.style.backgroundImage = `url("${f.foto}")`;
+          b.setAttribute("aria-label", `Ver foto ${i + 1}`);
+          b.appendChild(
+            nodo("span", "mina-num", String(i + 1).padStart(2, "0")),
+          );
+
+          // si la imagen no carga, se avisa en vez de dejar el cuadro vacío
+          const prueba = new Image();
+          prueba.onerror = () => {
+            b.style.backgroundImage = "none";
+            b.innerHTML = `<div class="mina-vacia">no cargó<br><b>${f.foto}</b></div>`;
+            b.disabled = true;
+          };
+          prueba.src = f.foto;
+
+          b.addEventListener("click", () => abrirVisor(i));
+          rejilla.appendChild(b);
+        });
+      }
+
+      function abrirMina() {
+        pintarGaleria();
+        $("#minaTelon").hidden = false;
+        document.body.style.overflow = "hidden";
+      }
+      function cerrarMina() {
+        $("#minaTelon").hidden = true;
+        document.body.style.overflow = "";
+      }
+
+      function abrirVisor(i) {
+        indiceVisor = i;
+        pintarVisor();
+        $("#visor").hidden = false;
+      }
+      function cerrarVisor() {
+        $("#visor").hidden = true;
+      }
+      function pintarVisor() {
+        const f = CONFIG.galeria[indiceVisor];
+        $("#visorImg").src = f.foto;
+        $("#visorImg").alt = `Foto ${indiceVisor + 1}`;
+        $("#visorNota").textContent = f.nota || "";
+      }
+      function visorSiguiente() {
+        indiceVisor = (indiceVisor + 1) % CONFIG.galeria.length;
+        pintarVisor();
+      }
+      function visorAnterior() {
+        indiceVisor =
+          (indiceVisor - 1 + CONFIG.galeria.length) % CONFIG.galeria.length;
+        pintarVisor();
+      }
+
+      $("#btnMina").addEventListener("click", abrirMina);
+      $("#btnMinaCerrar").addEventListener("click", cerrarMina);
+      $("#minaTelon").addEventListener("click", (ev) => {
+        if (ev.target.id === "minaTelon") cerrarMina();
+      });
+
+      $("#btnVisorCerrar").addEventListener("click", cerrarVisor);
+      $("#btnVisorNext").addEventListener("click", visorSiguiente);
+      $("#btnVisorPrev").addEventListener("click", visorAnterior);
+      $("#visor").addEventListener("click", (ev) => {
+        if (ev.target.id === "visor") cerrarVisor();
+      });
+
+      document.addEventListener("keydown", (ev) => {
+        if (!$("#visor").hidden) {
+          if (ev.key === "Escape") cerrarVisor();
+          if (ev.key === "ArrowRight") visorSiguiente();
+          if (ev.key === "ArrowLeft") visorAnterior();
+        } else if (!$("#minaTelon").hidden && ev.key === "Escape") {
+          cerrarMina();
+        }
+      });
+
+      pintarCabecera();
+      pintarNucleo();
+    </script>
+  </body>
+</html>
